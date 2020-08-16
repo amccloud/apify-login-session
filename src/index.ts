@@ -216,12 +216,16 @@ Apify.main(async () => {
 
                     const submitElement = (await page.$(step.submit.selector))!;
 
+                    await Apify.setValue(`before-submit-${key}`, await page.screenshot(), { contentType: 'image/png' });
                     // works for mobile and desktop versions
                     await submitElement.tap();
-                    await Apify.setValue(`password-${key}`, await page.screenshot(), { contentType: 'image/png' });
                 }
 
                 await race;
+                
+                if (step.submit) {
+                    await Apify.setValue(`after-submit-${key}`, await page.screenshot(), { contentType: 'image/png' });
+                }
 
                 try {
                     // just making sure it's settled, give some time for the Javascript
