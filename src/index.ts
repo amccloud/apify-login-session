@@ -92,12 +92,14 @@ Apify.main(async () => {
     let usedSession: undefined | Apify.Session;
 
     const crawler = new Apify.PuppeteerCrawler({
+        puppeteerPoolOptions: {
+         useLiveView: true
+        },
         launchPuppeteerFunction: async (options) => {
             usedSession = await sessionPool.getSession();
 
             return Apify.launchPuppeteer({
                 ...options,
-                liveView: true,
                 headless: false,
                 proxyUrl: usedSession.userData.proxyUrl,
                 stealthOptions: {
@@ -128,7 +130,9 @@ Apify.main(async () => {
         maxRequestsPerCrawl: +maxRequestRetries + input.steps.length + 3,
         maxRequestRetries,
         requestList,
-        autoscaledPoolOptions: {
+        autoscaled
+        
+        Options: {
             maxConcurrency: 1,
         },
         gotoFunction: async ({ page, request, puppeteerPool }) => {
