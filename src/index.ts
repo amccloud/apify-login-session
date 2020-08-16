@@ -130,9 +130,7 @@ Apify.main(async () => {
         maxRequestsPerCrawl: +maxRequestRetries + input.steps.length + 3,
         maxRequestRetries,
         requestList,
-        autoscaled
-        
-        Options: {
+        autoscaledPoolOptions: {
             maxConcurrency: 1,
         },
         gotoFunction: async ({ page, request, puppeteerPool }) => {
