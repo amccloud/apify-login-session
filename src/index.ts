@@ -160,16 +160,12 @@ Apify.main(async () => {
         handlePageTimeoutSecs: 300,
         persistCookiesPerSession: false,
         handlePageFunction: async ({ page, request, response }) => {
-            // This is a Puppeteer function that takes a screenshot of the page and returns its buffer.
-            const screenshotBuffer = await page.screenshot();
-
             // The record key may only include the following characters: a-zA-Z0-9!-_.'()
-            const key = request.url.replace(/[^\w]/g, '_').substr(0, 255);
+            const key = request.url.replace(/[^\w]/g, '_').substr(0, 200);
 
             // Save the screenshot. Choosing the right content type will automatically
             // assign the local file the right extension, in this case .png.
-            // The screenshots will be stored in ./apify_storage/key_value_stores/default/
-            await Apify.setValue(key, screenshotBuffer, { contentType: 'image/png' });
+            await Apify.setValue(`initial-${key}`, await page.screenshot(), { contentType: 'image/png' });
             console.log(`Screenshot of ${request.url} saved.`);
             
             try {
@@ -191,11 +187,13 @@ Apify.main(async () => {
                 if (step.username) {
                     await throwIfMissing(page, step.username, "username");
                     await focusAndType(page, step.username, username);
+                    await Apify.setValue(`username-${key}`, await page.screenshot(), { contentType: 'image/png' });
                 }
 
                 if (step.password) {
                     await throwIfMissing(page, step.password, "password");
                     await focusAndType(page, step.password, password);
+                    await Apify.setValue(`password-${key}`, await page.screenshot(), { contentType: 'image/png' });
                 }
 
                 // new URL throws on invalid URL, but it
@@ -220,6 +218,7 @@ Apify.main(async () => {
 
                     // works for mobile and desktop versions
                     await submitElement.tap();
+                    await Apify.setValue(`password-${key}`, await page.screenshot(), { contentType: 'image/png' });
                 }
 
                 await race;
@@ -244,6 +243,8 @@ Apify.main(async () => {
                 }
 
                 if (step.failed) {
+                    await Apify.setValue(`failed-${key}`, await page.screenshot(), { contentType: 'image/png' });
+                    
                     try {
                         // if it's missing, it will throw, and we expect it
                         await throwIfMissing(page, step.failed, "failed");
@@ -264,6 +265,7 @@ Apify.main(async () => {
 
                 // check if something unique to logged-in users is present on the page
                 if (step.success) {
+                    await Apify.setValue(`success-${key}`, await page.screenshot(), { contentType: 'image/png' });
                     await throwIfMissing(page, step.success, "success");
                 }
 
