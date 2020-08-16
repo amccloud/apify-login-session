@@ -164,7 +164,7 @@ Apify.main(async () => {
             const screenshotBuffer = await page.screenshot();
 
             // The record key may only include the following characters: a-zA-Z0-9!-_.'()
-            const key = request.url.replace(/[:/]/g, '_');
+            const key = request.url.replace(/[^\w]]/g, '_').substr(0, 255);
 
             // Save the screenshot. Choosing the right content type will automatically
             // assign the local file the right extension, in this case .png.
