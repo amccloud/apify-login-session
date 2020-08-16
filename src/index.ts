@@ -176,7 +176,7 @@ Apify.main(async () => {
 
             let currentUrl: URL | null = null;
 
-            for (const step of input.steps) {
+            for (const [index, step] of input.steps.entries()) {
                 request.noRetry = false; // reset retry
 
                 log.debug("Applying step", {
@@ -187,13 +187,13 @@ Apify.main(async () => {
                 if (step.username) {
                     await throwIfMissing(page, step.username, "username");
                     await focusAndType(page, step.username, username);
-                    await Apify.setValue(`username-${key}`, await page.screenshot(), { contentType: 'image/png' });
+                    await Apify.setValue(`username-${index}-${key}`, await page.screenshot(), { contentType: 'image/png' });
                 }
 
                 if (step.password) {
                     await throwIfMissing(page, step.password, "password");
                     await focusAndType(page, step.password, password);
-                    await Apify.setValue(`password-${key}`, await page.screenshot(), { contentType: 'image/png' });
+                    await Apify.setValue(`password-${index}-${key}`, await page.screenshot(), { contentType: 'image/png' });
                 }
 
                 // new URL throws on invalid URL, but it
@@ -216,7 +216,7 @@ Apify.main(async () => {
 
                     const submitElement = (await page.$(step.submit.selector))!;
 
-                    await Apify.setValue(`before-submit-${key}`, await page.screenshot(), { contentType: 'image/png' });
+                    await Apify.setValue(`before-submit-${index}-${key}`, await page.screenshot(), { contentType: 'image/png' });
                     // works for mobile and desktop versions
                     await submitElement.tap();
                 }
@@ -224,7 +224,7 @@ Apify.main(async () => {
                 await race;
                 
                 if (step.submit) {
-                    await Apify.setValue(`after-submit-${key}`, await page.screenshot(), { contentType: 'image/png' });
+                    await Apify.setValue(`after-submit-${index}-${key}`, await page.screenshot(), { contentType: 'image/png' });
                 }
 
                 try {
@@ -247,7 +247,7 @@ Apify.main(async () => {
                 }
 
                 if (step.failed) {
-                    await Apify.setValue(`failed-${key}`, await page.screenshot(), { contentType: 'image/png' });
+                    await Apify.setValue(`failed-${index}-${key}`, await page.screenshot(), { contentType: 'image/png' });
                     
                     try {
                         // if it's missing, it will throw, and we expect it
@@ -269,7 +269,7 @@ Apify.main(async () => {
 
                 // check if something unique to logged-in users is present on the page
                 if (step.success) {
-                    await Apify.setValue(`success-${key}`, await page.screenshot(), { contentType: 'image/png' });
+                    await Apify.setValue(`success-${index}-${key}`, await page.screenshot(), { contentType: 'image/png' });
                     await throwIfMissing(page, step.success, "success");
                 }
 
