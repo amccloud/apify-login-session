@@ -12,6 +12,7 @@ const { log, puppeteer } = Apify.utils;
 
 Apify.main(async () => {
     const input: Schema | null = await Apify.getInput();
+    let lastPageUrl;
 
     if (!input || typeof input !== "object") {
         throw new Error("Missing input");
@@ -199,6 +200,7 @@ Apify.main(async () => {
                 // new URL throws on invalid URL, but it
                 // should never happen in the real world
                 currentUrl = new URL(page.url());
+                lastPageUrl = currentUrl.toString();
 
                 const race = waitForPageActivity(
                     page,
@@ -355,6 +357,7 @@ Apify.main(async () => {
         await Apify.setValue("OUTPUT", {
             session: usedSession.getState(),
             error: null,
+            lastPageUrl,
         });
 
         log.info(`Session "${usedSession.id}" created`);
