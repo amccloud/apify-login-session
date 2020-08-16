@@ -97,6 +97,7 @@ Apify.main(async () => {
 
             return Apify.launchPuppeteer({
                 ...options,
+                liveView: true,
                 headless: false,
                 proxyUrl: usedSession.userData.proxyUrl,
                 stealthOptions: {
